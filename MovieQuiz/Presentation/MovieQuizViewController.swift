@@ -99,10 +99,9 @@ final class MovieQuizViewController: UIViewController {
         enableButtons(enable: false)
         if isCorrect {
             correctAnswers += 1
-            imageView.layer.borderColor = UIColor.ypRed.cgColor // делаем рамку красной
-        } else
-        {
-            imageView.layer.borderColor = UIColor.ypGreen.cgColor // делаем рамку зеленой
+            imageView.layer.borderColor = UIColor.ypGreen.cgColor // делаем рамку красной
+        } else {
+            imageView.layer.borderColor = UIColor.ypRed.cgColor // делаем рамку зеленой
         }
         // запускаем задачу через 1 секунду c помощью диспетчера задач
         DispatchQueue.main.asyncAfter(deadline: .now() + 1.0) {
@@ -166,7 +165,7 @@ final class MovieQuizViewController: UIViewController {
     /// метод при нажатии кнопки "Нет"
     @IBAction private func pressNoButton(_ sender: Any) {
         let correctAnswer = questions[currentQuestionIndex].correctAnswer
-        let givenAnswer = true
+        let givenAnswer = false
         if correctAnswer == givenAnswer {
             showAnswerResult(isCorrect: true)
         } else {
@@ -177,7 +176,7 @@ final class MovieQuizViewController: UIViewController {
     /// метод при нажатии кнопки "Да"
     @IBAction private func pressYesButton(_ sender: Any) {
         let correctAnswer = questions[currentQuestionIndex].correctAnswer
-        let givenAnswer = false
+        let givenAnswer = true
         if correctAnswer == givenAnswer {
             showAnswerResult(isCorrect: true)
         } else {
