@@ -1,39 +1,29 @@
 import UIKit
 
+/// массив вопросов
 private struct QuizQuestion {
-    // строка с названием фильма,
-    // совпадает с названием картинки афиши фильма в Assets
     let image: String
-    // строка с вопросом о рейтинге фильма
     let text: String
-    // булевое значение (true, false), правильный ответ на вопрос
     let correctAnswer: Bool
 }
-// массив вопросов
 
-// вью модель для состояния "Вопрос показан"
+/// вью модель для состояния "Вопрос показан"
 private struct QuizStepViewModel {
-    // картинка с афишей фильма с типом UIImage
     let image: UIImage
-    // вопрос о рейтинге квиза
     let question: String
-    // строка с порядковым номером этого вопроса (ex. "1/10")
     let questionNumber: String
 }
 
-// для состояния "Результат квиза"
+/// вью модель для состояния "Результат квиза"
 private struct QuizResultsViewModel {
-    // строка с заголовком алерта
     let title: String
-    // строка с текстом о количестве набранных очков
     let text: String
-    // текст для кнопки алерта
     let buttonText: String
 }
 
 final class MovieQuizViewController: UIViewController {
     // MARK: - Lifecycle
-    
+    /// моковый массив вопросов
     private let questions: [QuizQuestion] = [
         QuizQuestion(
             image: "The Godfather",
@@ -80,14 +70,15 @@ final class MovieQuizViewController: UIViewController {
     @IBOutlet private weak var imageView: UIImageView!
     @IBOutlet private weak var textLabel: UILabel!
     @IBOutlet private weak var counterLabel: UILabel!
+    @IBOutlet private weak var noButton: UIButton!
+    @IBOutlet private weak var yesButton: UIButton!
     
-    // переменная с индексом текущего вопроса, начальное значение 0
-    // (по этому индексу будем искать вопрос в массиве, где индекс первого элемента 0, а не 1)
+    /// переменная с индексом текущего вопроса, начальное значение 0
     private var currentQuestionIndex = 0
-    // переменная со счётчиком правильных ответов, начальное значение закономерно 0
+    /// переменная со счётчиком правильных ответов, начальное значение закономерно 0
     private var correctAnswers = 0
     
-    // приватный метод конвертации, который принимает моковый вопрос и возвращает вью модель для главного экрана
+    /// приватный метод конвертации, который принимает моковый вопрос и возвращает вью модель для главного экрана
     private func convert(model: QuizQuestion) -> QuizStepViewModel {
         let questionStep = QuizStepViewModel(
             image: UIImage(named: model.image) ?? UIImage(),
@@ -96,20 +87,16 @@ final class MovieQuizViewController: UIViewController {
         return questionStep
     }
     
-    // приватный метод вывода на экран вопроса, который принимает на вход вью модель вопроса и ничего не возвращает
+    /// приватный метод вывода на экран вопроса, который принимает на вход вью модель вопроса и ничего не возвращает
     private func show(quiz step: QuizStepViewModel) {
         counterLabel.text = step.questionNumber
         textLabel.text = step.question
         imageView.image = step.image
     }
     
-    // приватный метод, который меняет цвет рамки
-    // принимает на вход булевое значение и ничего не возвращает
+    /// приватный метод, который меняет цвет рамки
     private func showAnswerResult(isCorrect: Bool) {
-        // метод красит рамку
-        imageView.layer.masksToBounds = true // даём разрешение на рисование рамки
-        imageView.layer.borderWidth = 8 // толщина рамки
-        imageView.layer.cornerRadius = 6 // радиус скругления углов рамки
+        enableButtons(enable: false)
         if isCorrect {
             correctAnswers += 1
             imageView.layer.borderColor = UIColor.ypRed.cgColor // делаем рамку красной
@@ -124,8 +111,10 @@ final class MovieQuizViewController: UIViewController {
         }
     }
     
+    /// приватный метод для определения, нужно закончить игру или показать следующий вопрос
     private func showNextQuestionOrResults() {
         imageView.layer.borderColor = UIColor.clear.cgColor // делаем рамку бесцветной
+        enableButtons(enable: true)
         if currentQuestionIndex == questions.count - 1 {
             let viewModel = QuizResultsViewModel( // 2
                 title: "Этот раунд окончен!",
@@ -140,6 +129,7 @@ final class MovieQuizViewController: UIViewController {
         }
     }
     
+    /// алерт с результатами квиза
     private func show(quiz result: QuizResultsViewModel) {
         let alert = UIAlertController(
             title: result.title,
@@ -148,9 +138,7 @@ final class MovieQuizViewController: UIViewController {
         
         let action = UIAlertAction(title: result.buttonText, style: .default) {_ in
             self.currentQuestionIndex = 0
-            // сбрасываем переменную с количеством правильных ответов
             self.correctAnswers = 0
-            // заново показываем первый вопрос
             let firstQuestion = self.questions[self.currentQuestionIndex]
             let viewModel = self.convert(model: firstQuestion)
             self.show(quiz: viewModel)
@@ -159,12 +147,23 @@ final class MovieQuizViewController: UIViewController {
         self.present(alert, animated: true, completion: nil)
     }
     
+    /// приватный метод включения/отключения кнопок "Да" и "Нет"
+    private func enableButtons(enable boolean: Bool) {
+        noButton.isEnabled = boolean
+        yesButton.isEnabled = boolean
+    }
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         let currentQuestion = questions[currentQuestionIndex]
         show(quiz: convert(model: currentQuestion))
+        
+        imageView.layer.masksToBounds = true
+        imageView.layer.borderWidth = 8 // толщина рамки
+        imageView.layer.cornerRadius = 20 // радиус скругления углов рамки
     }
     
+    /// метод при нажатии кнопки "Нет"
     @IBAction private func pressNoButton(_ sender: Any) {
         let correctAnswer = questions[currentQuestionIndex].correctAnswer
         let givenAnswer = true
@@ -175,6 +174,7 @@ final class MovieQuizViewController: UIViewController {
         }
     }
     
+    /// метод при нажатии кнопки "Да"
     @IBAction private func pressYesButton(_ sender: Any) {
         let correctAnswer = questions[currentQuestionIndex].correctAnswer
         let givenAnswer = false

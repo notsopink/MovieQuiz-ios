@@ -115,7 +115,9 @@
                     <connections>
                         <outlet property="counterLabel" destination="vH6-7L-PWv" id="ygP-HE-DTV"/>
                         <outlet property="imageView" destination="MNo-IP-RDX" id="O7V-V9-0Dk"/>
+                        <outlet property="noButton" destination="THH-xO-1Aq" id="cmM-VH-CDC"/>
                         <outlet property="textLabel" destination="4L1-HT-OHz" id="jRd-x2-mFB"/>
+                        <outlet property="yesButton" destination="Zaf-tl-utR" id="5Xw-nM-KhF"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
